@@ -2,9 +2,14 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Countdown 毕业 · 2027年1月9日</title>
-  <meta name="description" content="Countdown 毕业 - 倒计时至 2027年1月9日">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>COUNTDOWN 毕业 · 2027.01.09</title>
+  <meta name="description" content="COUNTDOWN 毕业 - 倒计时至 2027年1月9日">
+  <!-- Mobile Web App & Theme Color Meta -->
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="stylesheet" href="style.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
 </head>
@@ -19,10 +24,10 @@
   <audio id="bgmAudio" src="song.mp3" autoplay loop preload="auto" playsinline></audio>
 
   <main class="page-container">
-    <!-- Top Navigation Bar -->
+    <!-- Top Navigation Bar (Mobile-Optimized 44pt Touch Targets) -->
     <header class="top-nav">
       <!-- Non-Stoppable Background Music Indicator -->
-      <div id="musicPill" class="music-pill playing" aria-label="Background music is playing" title="Background Music (Continuous Loop)">
+      <div id="musicPill" class="music-pill playing" aria-label="BACKGROUND MUSIC IS PLAYING" title="BACKGROUND MUSIC (CONTINUOUS LOOP)">
         <span class="music-icon-wrap">
           <span class="music-bars" id="musicBars" aria-hidden="true">
             <span class="bar bar-1"></span>
@@ -30,11 +35,11 @@
             <span class="bar bar-3"></span>
           </span>
         </span>
-        <span class="music-text" id="musicText">🎵 BGM Playing</span>
+        <span class="music-text" id="musicText">🎵 BGM PLAYING</span>
       </div>
       
       <div class="nav-controls">
-        <button id="themeToggle" class="icon-btn" title="Toggle Appearance" aria-label="Toggle light or dark theme">
+        <button id="themeToggle" class="icon-btn" title="TOGGLE APPEARANCE" aria-label="TOGGLE LIGHT OR DARK THEME">
           <svg class="icon sun-icon hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="5"></circle>
             <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -51,7 +56,7 @@
           </svg>
         </button>
 
-        <button id="fullscreenToggle" class="icon-btn" title="Toggle Fullscreen" aria-label="Toggle fullscreen mode">
+        <button id="fullscreenToggle" class="icon-btn" title="TOGGLE FULLSCREEN" aria-label="TOGGLE FULLSCREEN MODE">
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
           </svg>
@@ -65,14 +70,14 @@
       <section class="hero-section">
         <div class="subtitle-tag">
           <span class="cap-emoji">🎓</span>
-          <span class="target-date-label">目标设定：2027年1月9日 00:00:00</span>
+          <span class="target-date-label">TARGET: JANUARY 9, 2027 00:00:00</span>
         </div>
-        <h1 class="main-title">Countdown 毕业</h1>
-        <p class="tagline">静待花开，奔赴下一场山海</p>
+        <h1 class="main-title">COUNTDOWN 毕业</h1>
+        <p class="tagline">静待花开 · 奔赴下一场山海 · ROAD TO GRADUATION</p>
       </section>
 
-      <!-- Apple-Style Countdown Stage -->
-      <section class="countdown-stage" aria-label="毕业倒计时">
+      <!-- Apple-Style Countdown Stage (Native Mobile Widget Look) -->
+      <section class="countdown-stage" aria-label="COUNTDOWN 毕业">
         <div class="clock-grid">
           <!-- Days -->
           <div class="unit-card" data-unit="days">
@@ -80,11 +85,11 @@
               <div class="digit-box">
                 <span class="digit-value" id="val-days">--</span>
               </div>
-              <span class="unit-label">日</span>
+              <span class="unit-label">日 · DAYS</span>
             </div>
           </div>
 
-          <div class="time-separator">:</div>
+          <div class="time-separator" aria-hidden="true">:</div>
 
           <!-- Hours -->
           <div class="unit-card" data-unit="hours">
@@ -92,11 +97,11 @@
               <div class="digit-box">
                 <span class="digit-value" id="val-hours">--</span>
               </div>
-              <span class="unit-label">小时</span>
+              <span class="unit-label">小时 · HOURS</span>
             </div>
           </div>
 
-          <div class="time-separator">:</div>
+          <div class="time-separator" aria-hidden="true">:</div>
 
           <!-- Minutes -->
           <div class="unit-card" data-unit="minutes">
@@ -104,11 +109,11 @@
               <div class="digit-box">
                 <span class="digit-value" id="val-minutes">--</span>
               </div>
-              <span class="unit-label">分</span>
+              <span class="unit-label">分 · MINS</span>
             </div>
           </div>
 
-          <div class="time-separator">:</div>
+          <div class="time-separator" aria-hidden="true">:</div>
 
           <!-- Seconds -->
           <div class="unit-card" data-unit="seconds">
@@ -116,57 +121,57 @@
               <div class="digit-box">
                 <span class="digit-value" id="val-seconds">--</span>
               </div>
-              <span class="unit-label">秒</span>
+              <span class="unit-label">秒 · SECS</span>
             </div>
           </div>
         </div>
 
         <!-- Format Display: dd日,hh小时,mm分,ss秒 -->
         <div class="format-pill-wrapper">
-          <div class="format-pill" id="copyFormatBtn" title="点击复制当前倒计时文本" role="button" tabindex="0">
-            <span class="pill-indicator">格式</span>
+          <div class="format-pill" id="copyFormatBtn" title="CLICK TO COPY CURRENT COUNTDOWN" role="button" tabindex="0">
+            <span class="pill-indicator">FORMAT</span>
             <span class="format-string" id="formattedCountdownString">--日,--小时,--分,--秒</span>
             <span class="copy-hint">
               <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
               </svg>
-              <span class="copy-text">复制</span>
+              <span class="copy-text">COPY</span>
             </span>
           </div>
-          <span class="copied-toast" id="copiedToast">已复制到剪贴板</span>
+          <span class="copied-toast" id="copiedToast">COPIED TO CLIPBOARD</span>
         </div>
       </section>
 
-      <!-- Time Metrics & Journey Bar -->
+      <!-- Time Metrics & Journey Bar (Thumb Zone) -->
       <section class="journey-dashboard">
         <div class="progress-container">
           <div class="progress-header">
-            <span class="progress-title">时光进度</span>
+            <span class="progress-title">TIME PROGRESS · 进度</span>
             <span class="progress-percent" id="progressPercent">0.0%</span>
           </div>
           <div class="progress-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
             <div class="progress-fill" id="progressBar"></div>
           </div>
           <div class="progress-footer">
-            <span id="journeyStartLabel">起航：今日</span>
-            <span id="journeyTargetLabel">终点：2027年1月9日</span>
+            <span id="journeyStartLabel">START: SEP 1, 2026</span>
+            <span id="journeyTargetLabel">FINISH: JAN 9, 2027</span>
           </div>
         </div>
 
-        <!-- Sub-metrics Grid -->
+        <!-- Sub-metrics Grid (Mobile Responsive 3-Col Card) -->
         <div class="metrics-grid">
           <div class="metric-card">
             <span class="metric-num" id="totalHoursRemaining">-</span>
-            <span class="metric-name">总计剩余小时</span>
+            <span class="metric-name">HOURS LEFT</span>
           </div>
           <div class="metric-card">
             <span class="metric-num" id="totalMinutesRemaining">-</span>
-            <span class="metric-name">总计剩余分钟</span>
+            <span class="metric-name">MINUTES LEFT</span>
           </div>
           <div class="metric-card">
             <span class="metric-num" id="totalSecondsRemaining">-</span>
-            <span class="metric-name">总计剩余秒数</span>
+            <span class="metric-name">SECONDS LEFT</span>
           </div>
         </div>
       </section>
@@ -174,7 +179,7 @@
 
     <!-- Minimalist Footer -->
     <footer class="page-footer">
-      <p class="footer-note">距离愿望实现，每一秒都在靠近 · 2027.01.09</p>
+      <p class="footer-note">EVERY SECOND BRINGS YOU CLOSER · 2027.01.09</p>
     </footer>
   </main>
 

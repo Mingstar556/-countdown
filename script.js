@@ -54,7 +54,7 @@
         if (elMusicText) elMusicText.textContent = '🎵 BGM: 毕业歌';
       }).catch(() => {
         // Awaiting browser gesture unlock if blocked on zero-interaction entry
-        if (elMusicText) elMusicText.textContent = '🎵 BGM (Click to Play)';
+        if (elMusicText) elMusicText.textContent = '🎵 BGM (TAP TO PLAY)';
       });
     }
   }
@@ -242,7 +242,7 @@
           document.body.removeChild(ta);
         }
         if (elCopiedToast) {
-          elCopiedToast.textContent = `已复制: ${text}`;
+          elCopiedToast.textContent = `COPIED: ${text}`;
           elCopiedToast.classList.add('show');
           clearTimeout(copyTimer);
           copyTimer = setTimeout(() => elCopiedToast.classList.remove('show'), 1800);
