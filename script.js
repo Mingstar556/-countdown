@@ -1,5 +1,5 @@
 /**
- * Countdown 毕业 · Core JavaScript
+ * Countdown 毕业 · Optimized Fast Runtime
  * Target: January 9, 2027 00:00:00 Local Time
  * Format: dd日,hh小时,mm分,ss秒
  */
@@ -7,13 +7,14 @@
 (function () {
   'use strict';
 
-  // Target: January 9, 2027 00:00:00 (Month 0 is January)
+  // Target: January 9, 2027 00:00:00 (Local Time)
   const TARGET_DATE = new Date(2027, 0, 9, 0, 0, 0);
 
-  // Reference start date for the academic progress calculation: September 1, 2026
+  // Reference for progress calculation: September 1, 2026
   const SEMESTER_START = new Date(2026, 8, 1, 0, 0, 0);
+  const TOTAL_DURATION = TARGET_DATE - SEMESTER_START;
 
-  // DOM Elements
+  // Cache Elements
   const elDays = document.getElementById('val-days');
   const elHours = document.getElementById('val-hours');
   const elMinutes = document.getElementById('val-minutes');
@@ -24,7 +25,6 @@
 
   const elProgressBar = document.getElementById('progressBar');
   const elProgressPercent = document.getElementById('progressPercent');
-  const elJourneyStartLabel = document.getElementById('journeyStartLabel');
   const elTotalHours = document.getElementById('totalHoursRemaining');
   const elTotalMinutes = document.getElementById('totalMinutesRemaining');
   const elTotalSeconds = document.getElementById('totalSecondsRemaining');
@@ -35,7 +35,7 @@
   const elStatusText = document.getElementById('statusText');
   const mouseGlow = document.getElementById('mouseGlow');
 
-  // Sound Synth via Web Audio API (No external assets required)
+  // Lightweight Audio Context (lazy loaded on demand)
   let audioCtx = null;
   let isSoundEnabled = false;
 
@@ -52,60 +52,45 @@
       const gain = audioCtx.createGain();
 
       osc.type = 'sine';
-      osc.frequency.setValueAtTime(820, audioCtx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(320, audioCtx.currentTime + 0.04);
+      osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.03);
 
-      gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.04);
+      gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.03);
 
       osc.connect(gain);
       gain.connect(audioCtx.destination);
 
       osc.start();
-      osc.stop(audioCtx.currentTime + 0.045);
-    } catch (e) {
-      // Audio autoplay policy catch
-    }
+      osc.stop(audioCtx.currentTime + 0.035);
+    } catch (_) {}
   }
 
-  // Previous values cache for triggering tick animation only when value changes
-  let prevValues = {
-    days: null,
-    hours: null,
-    minutes: null,
-    seconds: null
-  };
+  // Previous state cache
+  let prevD = '', prevH = '', prevM = '', prevS = '';
 
-  function updateDigit(element, newValue, unitKey) {
-    const formatted = String(newValue).padStart(2, '0');
-    if (prevValues[unitKey] !== formatted) {
-      element.textContent = formatted;
-      // Trigger slide/tick animation
-      element.classList.remove('digit-tick');
-      // Force reflow
-      void element.offsetWidth;
-      element.classList.add('digit-tick');
-
-      if (unitKey === 'seconds') {
-        playTickSound();
-      }
-      prevValues[unitKey] = formatted;
+  function setDigit(el, val, isSec) {
+    if (el.textContent !== val) {
+      el.textContent = val;
+      // Snappy animation without synchronous layout thrashing
+      el.classList.remove('digit-tick');
+      requestAnimationFrame(() => {
+        el.classList.add('digit-tick');
+      });
+      if (isSec) playTickSound();
     }
   }
 
   function updateCountdown() {
-    const now = new Date();
-    const diff = TARGET_DATE - now;
+    const now = Date.now();
+    const diff = TARGET_DATE.getTime() - now;
 
     if (diff <= 0) {
-      // Countdown completed
-      updateDigit(elDays, 0, 'days');
-      updateDigit(elHours, 0, 'hours');
-      updateDigit(elMinutes, 0, 'minutes');
-      updateDigit(elSeconds, 0, 'seconds');
-
-      const completedFormat = '00日,00小时,00分,00秒';
-      elFormattedString.textContent = completedFormat;
+      setDigit(elDays, '00', false);
+      setDigit(elHours, '00', false);
+      setDigit(elMinutes, '00', false);
+      setDigit(elSeconds, '00', false);
+      elFormattedString.textContent = '00日,00小时,00分,00秒';
       elStatusText.textContent = '🎉 毕业快乐！Happy Graduation!';
       if (elProgressPercent) elProgressPercent.textContent = '100.0%';
       if (elProgressBar) elProgressBar.style.width = '100%';
@@ -115,79 +100,71 @@
       return;
     }
 
-    // Calculations
-    const totalSeconds = Math.floor(diff / 1000);
-    const totalMinutes = Math.floor(totalSeconds / 60);
-    const totalHours = Math.floor(totalMinutes / 60);
+    const totalSeconds = (diff / 1000) | 0;
+    const totalMinutes = (totalSeconds / 60) | 0;
+    const totalHours = (totalMinutes / 60) | 0;
 
-    const days = Math.floor(totalHours / 24);
-    const hours = totalHours % 24;
-    const minutes = totalMinutes % 60;
-    const seconds = totalSeconds % 60;
+    const d = (totalHours / 24) | 0;
+    const h = totalHours % 24;
+    const m = totalMinutes % 60;
+    const s = totalSeconds % 60;
 
-    // Update UI Cards
-    updateDigit(elDays, days, 'days');
-    updateDigit(elHours, hours, 'hours');
-    updateDigit(elMinutes, minutes, 'minutes');
-    updateDigit(elSeconds, seconds, 'seconds');
+    const strD = d < 10 ? '0' + d : String(d);
+    const strH = h < 10 ? '0' + h : String(h);
+    const strM = m < 10 ? '0' + m : String(m);
+    const strS = s < 10 ? '0' + s : String(s);
+
+    if (strD !== prevD) { setDigit(elDays, strD, false); prevD = strD; }
+    if (strH !== prevH) { setDigit(elHours, strH, false); prevH = strH; }
+    if (strM !== prevM) { setDigit(elMinutes, strM, false); prevM = strM; }
+    if (strS !== prevS) { setDigit(elSeconds, strS, true); prevS = strS; }
 
     // Required Clock Format: dd日,hh小时,mm分,ss秒
-    const pad = (n) => String(n).padStart(2, '0');
-    const exactFormatString = `${pad(days)}日,${pad(hours)}小时,${pad(minutes)}分,${pad(seconds)}秒`;
-    elFormattedString.textContent = exactFormatString;
+    elFormattedString.textContent = `${strD}日,${strH}小时,${strM}分,${strS}秒`;
 
-    // Sub-metrics
     if (elTotalHours) elTotalHours.textContent = totalHours.toLocaleString();
     if (elTotalMinutes) elTotalMinutes.textContent = totalMinutes.toLocaleString();
     if (elTotalSeconds) elTotalSeconds.textContent = totalSeconds.toLocaleString();
 
-    // Journey progress calculation
-    const totalDuration = TARGET_DATE - SEMESTER_START;
-    const elapsed = now - SEMESTER_START;
-    let percent = (elapsed / totalDuration) * 100;
-    percent = Math.max(0, Math.min(100, percent));
+    // Journey progress
+    const elapsed = now - SEMESTER_START.getTime();
+    let percent = (elapsed / TOTAL_DURATION) * 100;
+    percent = percent < 0 ? 0 : percent > 100 ? 100 : percent;
 
     if (elProgressPercent) elProgressPercent.textContent = `${percent.toFixed(1)}%`;
     if (elProgressBar) elProgressBar.style.width = `${percent.toFixed(1)}%`;
   }
 
   // Copy Format Feature
-  let copyTimeout = null;
+  let copyTimer = null;
   elCopyBtn.addEventListener('click', async () => {
-    const textToCopy = elFormattedString.textContent;
+    const text = elFormattedString.textContent;
     try {
-      await navigator.clipboard.writeText(textToCopy);
-      elCopiedToast.textContent = `已复制: ${textToCopy}`;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+      elCopiedToast.textContent = `已复制: ${text}`;
       elCopiedToast.classList.add('show');
-
-      clearTimeout(copyTimeout);
-      copyTimeout = setTimeout(() => {
-        elCopiedToast.classList.remove('show');
-      }, 2000);
-    } catch (err) {
-      // Fallback for older browsers
-      const textarea = document.createElement('textarea');
-      textarea.value = textToCopy;
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textarea);
-
-      elCopiedToast.textContent = `已复制: ${textToCopy}`;
-      elCopiedToast.classList.add('show');
-      clearTimeout(copyTimeout);
-      copyTimeout = setTimeout(() => {
-        elCopiedToast.classList.remove('show');
-      }, 2000);
-    }
+      clearTimeout(copyTimer);
+      copyTimer = setTimeout(() => elCopiedToast.classList.remove('show'), 1800);
+    } catch (_) {}
   });
 
-  // Theme Toggle (Dark / Light with Local Storage)
+  // Theme Toggle
   const sunIcon = elThemeToggle.querySelector('.sun-icon');
   const moonIcon = elThemeToggle.querySelector('.moon-icon');
 
-  function applyTheme(isLight) {
-    if (isLight) {
+  function setTheme(light) {
+    if (light) {
       document.body.classList.add('light-theme');
       document.body.classList.remove('dark-theme');
       sunIcon.classList.remove('hidden');
@@ -201,72 +178,47 @@
   }
 
   const savedTheme = localStorage.getItem('countdown-theme');
-  if (savedTheme === 'light') {
-    applyTheme(true);
-  } else {
-    applyTheme(false);
-  }
+  if (savedTheme === 'light') setTheme(true);
 
   elThemeToggle.addEventListener('click', () => {
     const isLight = document.body.classList.contains('light-theme');
-    applyTheme(!isLight);
+    setTheme(!isLight);
     localStorage.setItem('countdown-theme', !isLight ? 'light' : 'dark');
   });
 
   // Sound Toggle
-  const soundOnIcon = elSoundToggle.querySelector('.sound-on');
-  const soundOffIcon = elSoundToggle.querySelector('.sound-off');
+  const soundOn = elSoundToggle.querySelector('.sound-on');
+  const soundOff = elSoundToggle.querySelector('.sound-off');
 
   elSoundToggle.addEventListener('click', () => {
     isSoundEnabled = !isSoundEnabled;
-    if (isSoundEnabled) {
-      soundOnIcon.classList.remove('hidden');
-      soundOffIcon.classList.add('hidden');
-      playTickSound(); // preview immediate sound
-    } else {
-      soundOnIcon.classList.add('hidden');
-      soundOffIcon.classList.remove('hidden');
-    }
+    soundOn.classList.toggle('hidden', !isSoundEnabled);
+    soundOff.classList.toggle('hidden', isSoundEnabled);
+    if (isSoundEnabled) playTickSound();
   });
-  // Default sound off
-  soundOnIcon.classList.add('hidden');
-  soundOffIcon.classList.remove('hidden');
 
   // Fullscreen Toggle
   elFullscreenToggle.addEventListener('click', () => {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen().catch(() => {});
-    } else {
-      if (document.exitFullscreen) {
-        document.exitFullscreen().catch(() => {});
-      }
+    } else if (document.exitFullscreen) {
+      document.exitFullscreen().catch(() => {});
     }
   });
 
-  // Smooth Interactive Ambient Mouse Glow
-  let mouseX = window.innerWidth / 2;
-  let mouseY = window.innerHeight / 2;
-  let currentX = mouseX;
-  let currentY = mouseY;
-
+  // Passive Hardware Mouse Glow (Only updates on pointer movement, 0 idle overhead)
+  let glowTicking = false;
   window.addEventListener('pointermove', (e) => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-  });
-
-  function renderMouseGlow() {
-    // Apple-style damping / lerp
-    currentX += (mouseX - currentX) * 0.08;
-    currentY += (mouseY - currentY) * 0.08;
-    if (mouseGlow) {
-      mouseGlow.style.left = `${currentX}px`;
-      mouseGlow.style.top = `${currentY}px`;
+    if (!glowTicking && mouseGlow) {
+      glowTicking = true;
+      requestAnimationFrame(() => {
+        mouseGlow.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate3d(-50%, -50%, 0)`;
+        glowTicking = false;
+      });
     }
-    requestAnimationFrame(renderMouseGlow);
-  }
-  requestAnimationFrame(renderMouseGlow);
+  }, { passive: true });
 
-  // Initialize and run interval
+  // Instant render on load
   updateCountdown();
   setInterval(updateCountdown, 1000);
 })();
