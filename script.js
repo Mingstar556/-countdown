@@ -32,86 +32,68 @@
   const elTotalSeconds = document.getElementById('totalSecondsRemaining');
 
   const elThemeToggle = document.getElementById('themeToggle');
-  const elSoundToggle = document.getElementById('soundToggle');
   const elFullscreenToggle = document.getElementById('fullscreenToggle');
   const mouseGlow = document.getElementById('mouseGlow');
 
   // Music Elements
   const bgmAudio = document.getElementById('bgmAudio');
-  const elMusicToggle = document.getElementById('musicToggle');
+  const elMusicPill = document.getElementById('musicPill');
   const elMusicText = document.getElementById('musicText');
 
   /* ==========================================================================
-     1. Background Music Controller (Native HTML5 Loop: song.mp3)
+     1. Unstoppable Background Music Engine (Autoplay + Infinite Loop)
      ========================================================================== */
-  let isMusicPlaying = false;
-  let hasUserInteracted = false;
-
-  function updateMusicState(playing) {
-    isMusicPlaying = playing;
-    if (elMusicToggle) {
-      elMusicToggle.classList.toggle('playing', playing);
-      if (elMusicText) {
-        elMusicText.textContent = playing ? '🎵 Playing' : '🎵 Play Music';
-      }
+  function forcePlayMusic() {
+    if (!bgmAudio) return;
+    bgmAudio.loop = true;
+    bgmAudio.volume = 1.0;
+    const playPromise = bgmAudio.play();
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        if (elMusicPill) elMusicPill.classList.add('playing');
+        if (elMusicText) elMusicText.textContent = '🎵 BGM: 毕业歌';
+      }).catch(() => {
+        // Awaiting browser gesture unlock if blocked on zero-interaction entry
+        if (elMusicText) elMusicText.textContent = '🎵 BGM (Click to Play)';
+      });
     }
   }
 
-  function startMusic() {
-    if (!bgmAudio) return;
-    bgmAudio.play().then(() => {
-      updateMusicState(true);
-    }).catch(() => {
-      // Autoplay blocked by browser policy until interaction
-      updateMusicState(false);
-    });
-  }
-
-  function pauseMusic() {
-    if (!bgmAudio) return;
-    bgmAudio.pause();
-    updateMusicState(false);
-  }
-
-  // Audio Event Listeners for State & Infinite Loop Guarantee
   if (bgmAudio) {
     bgmAudio.loop = true;
-    bgmAudio.addEventListener('play', () => updateMusicState(true));
-    bgmAudio.addEventListener('pause', () => updateMusicState(false));
+    bgmAudio.autoplay = true;
+
+    // Guaranteed infinite loop on end
     bgmAudio.addEventListener('ended', () => {
       bgmAudio.currentTime = 0;
-      bgmAudio.play().catch(() => {});
+      forcePlayMusic();
     });
 
-    // Attempt instant autoplay on page load
-    startMusic();
+    // Make music CANNOT be turned off: immediately resume if paused
+    bgmAudio.addEventListener('pause', () => {
+      forcePlayMusic();
+    });
+
+    // Attempt instant autoplay immediately on script load, DOM ready, and window load
+    forcePlayMusic();
+    document.addEventListener('DOMContentLoaded', forcePlayMusic);
+    window.addEventListener('load', forcePlayMusic);
   }
 
-  // Unlock audio on first user interaction anywhere on the screen
-  function handleFirstInteraction() {
-    if (hasUserInteracted) return;
-    hasUserInteracted = true;
-    if (bgmAudio && bgmAudio.paused) {
-      startMusic();
-    }
-  }
-
-  window.addEventListener('pointerdown', handleFirstInteraction, { once: true });
-  window.addEventListener('keydown', handleFirstInteraction, { once: true });
-  window.addEventListener('touchstart', handleFirstInteraction, { once: true });
-
-  // Music Pill Button Click Toggle
-  if (elMusicToggle) {
-    elMusicToggle.addEventListener('click', (e) => {
-      e.stopPropagation();
-      hasUserInteracted = true;
-      if (!bgmAudio) return;
-
-      if (bgmAudio.paused) {
-        startMusic();
-      } else {
-        pauseMusic();
+  // Catch every possible user gesture so audio starts the exact millisecond user interacts
+  const gestureEvents = ['pointerdown', 'touchstart', 'touchend', 'mousedown', 'click', 'keydown', 'wheel', 'scroll'];
+  gestureEvents.forEach(eventType => {
+    window.addEventListener(eventType, () => {
+      if (bgmAudio && bgmAudio.paused) {
+        forcePlayMusic();
       }
+    }, { passive: true });
+  });
+
+  // Clicking the music pill also forces playback
+  if (elMusicPill) {
+    elMusicPill.addEventListener('click', () => {
+      forcePlayMusic();
     });
   }
 
@@ -295,18 +277,6 @@
       const isLight = document.body.classList.contains('light-theme');
       setTheme(!isLight);
       localStorage.setItem('countdown-theme', !isLight ? 'light' : 'dark');
-    });
-  }
-
-  // Sound Toggle
-  if (elSoundToggle) {
-    const soundOn = elSoundToggle.querySelector('.sound-on');
-    const soundOff = elSoundToggle.querySelector('.sound-off');
-    elSoundToggle.addEventListener('click', () => {
-      isSoundEnabled = !isSoundEnabled;
-      if (soundOn) soundOn.classList.toggle('hidden', !isSoundEnabled);
-      if (soundOff) soundOff.classList.toggle('hidden', isSoundEnabled);
-      if (isSoundEnabled) playTickSound();
     });
   }
 

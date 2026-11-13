@@ -15,14 +15,14 @@
     <div class="interactive-glow" id="mouseGlow"></div>
   </div>
 
-  <!-- Native HTML5 Loop Audio Engine (100% Reliable, Zero Block, Exact Song: https://youtu.be/aivb0mwmA7o) -->
-  <audio id="bgmAudio" src="song.mp3" loop preload="auto" playsinline></audio>
+  <!-- Non-Stoppable Native HTML5 Loop Audio Engine (song.mp3) -->
+  <audio id="bgmAudio" src="song.mp3" autoplay loop preload="auto" playsinline></audio>
 
   <main class="page-container">
     <!-- Top Navigation Bar -->
     <header class="top-nav">
-      <!-- Music Player Pill -->
-      <button id="musicToggle" class="music-pill" aria-label="Play background music" title="Click to play or pause background music">
+      <!-- Non-Stoppable Background Music Indicator -->
+      <div id="musicPill" class="music-pill playing" aria-label="Background music is playing" title="Background Music (Continuous Loop)">
         <span class="music-icon-wrap">
           <span class="music-bars" id="musicBars" aria-hidden="true">
             <span class="bar bar-1"></span>
@@ -30,23 +30,10 @@
             <span class="bar bar-3"></span>
           </span>
         </span>
-        <span class="music-text" id="musicText">🎵 Play Music</span>
-      </button>
+        <span class="music-text" id="musicText">🎵 BGM Playing</span>
+      </div>
       
       <div class="nav-controls">
-        <button id="soundToggle" class="icon-btn" title="Haptic Key Click Sound" aria-label="Toggle subtle key click sound">
-          <svg class="icon sound-on hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
-          </svg>
-          <svg class="icon sound-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-            <line x1="23" y1="9" x2="17" y2="15"></line>
-            <line x1="17" y1="9" x2="23" y2="15"></line>
-          </svg>
-        </button>
-
         <button id="themeToggle" class="icon-btn" title="Toggle Appearance" aria-label="Toggle light or dark theme">
           <svg class="icon sun-icon hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="5"></circle>
