@@ -5,27 +5,40 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Countdown 毕业 · 2027年1月9日</title>
   <meta name="description" content="Countdown 毕业 - 倒计时至 2027年1月9日">
-  <!-- Preconnect and system font preference for instant 0ms first render -->
+  <!-- YouTube IFrame API -->
+  <script src="https://www.youtube.com/iframe_api" async></script>
   <link rel="stylesheet" href="style.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
 </head>
 <body class="dark-theme">
-  <!-- Lightweight Hardware-Accelerated Ambient Light (Zero Blur Filter Overhead) -->
+  <!-- Lightweight Hardware-Accelerated Ambient Light -->
   <div class="ambient-layer" aria-hidden="true">
     <div class="light-mesh"></div>
     <div class="interactive-glow" id="mouseGlow"></div>
   </div>
 
+  <!-- Background YouTube Music Player (Persistent & Loop) -->
+  <div id="yt-player-wrap" class="yt-hidden-player" aria-hidden="true">
+    <div id="ytPlayer"></div>
+  </div>
+
   <main class="page-container">
-    <!-- Top Bar Controls -->
+    <!-- Top Bar Navigation with Apple Music Player -->
     <header class="top-nav">
-      <div class="badge-pill">
-        <span class="status-dot"></span>
-        <span class="badge-text" id="statusText">倒计时进行中</span>
-      </div>
+      <!-- Music Player Pill (Replaced old '倒计时进行中' badge) -->
+      <button id="musicToggle" class="music-pill" aria-label="播放背景音乐" title="点击播放/暂停背景音乐">
+        <span class="music-icon-wrap">
+          <span class="music-bars" id="musicBars" aria-hidden="true">
+            <span class="bar bar-1"></span>
+            <span class="bar bar-2"></span>
+            <span class="bar bar-3"></span>
+          </span>
+        </span>
+        <span class="music-text" id="musicText">BGM 音乐</span>
+      </button>
       
       <div class="nav-controls">
-        <button id="soundToggle" class="icon-btn" title="微触感音效" aria-label="切换微音效">
+        <button id="soundToggle" class="icon-btn" title="微触感按键音" aria-label="切换按键微音效">
           <svg class="icon sound-on hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
             <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
