@@ -5,28 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Countdown 毕业 · 2027年1月9日</title>
   <meta name="description" content="Countdown 毕业 - 倒计时至 2027年1月9日">
-  <!-- YouTube IFrame API -->
-  <script src="https://www.youtube.com/iframe_api" async></script>
   <link rel="stylesheet" href="style.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
 </head>
 <body class="dark-theme">
-  <!-- Lightweight Hardware-Accelerated Ambient Light -->
+  <!-- Hardware-Accelerated Ambient Light Layer -->
   <div class="ambient-layer" aria-hidden="true">
     <div class="light-mesh"></div>
     <div class="interactive-glow" id="mouseGlow"></div>
   </div>
 
-  <!-- Background YouTube Music Player (Persistent & Loop) -->
-  <div id="yt-player-wrap" class="yt-hidden-player" aria-hidden="true">
-    <div id="ytPlayer"></div>
-  </div>
+  <!-- Native HTML5 Loop Audio Engine (100% Reliable, Zero Block, Exact Song: https://youtu.be/aivb0mwmA7o) -->
+  <audio id="bgmAudio" src="song.mp3" loop preload="auto" playsinline></audio>
 
   <main class="page-container">
-    <!-- Top Bar Navigation with Apple Music Player -->
+    <!-- Top Navigation Bar -->
     <header class="top-nav">
-      <!-- Music Player Pill (Replaced old '倒计时进行中' badge) -->
-      <button id="musicToggle" class="music-pill" aria-label="播放背景音乐" title="点击播放/暂停背景音乐">
+      <!-- Music Player Pill -->
+      <button id="musicToggle" class="music-pill" aria-label="Play background music" title="Click to play or pause background music">
         <span class="music-icon-wrap">
           <span class="music-bars" id="musicBars" aria-hidden="true">
             <span class="bar bar-1"></span>
@@ -34,11 +30,11 @@
             <span class="bar bar-3"></span>
           </span>
         </span>
-        <span class="music-text" id="musicText">BGM 音乐</span>
+        <span class="music-text" id="musicText">🎵 Play Music</span>
       </button>
       
       <div class="nav-controls">
-        <button id="soundToggle" class="icon-btn" title="微触感按键音" aria-label="切换按键微音效">
+        <button id="soundToggle" class="icon-btn" title="Haptic Key Click Sound" aria-label="Toggle subtle key click sound">
           <svg class="icon sound-on hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
             <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
@@ -51,7 +47,7 @@
           </svg>
         </button>
 
-        <button id="themeToggle" class="icon-btn" title="切换外观" aria-label="切换主题外观">
+        <button id="themeToggle" class="icon-btn" title="Toggle Appearance" aria-label="Toggle light or dark theme">
           <svg class="icon sun-icon hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="5"></circle>
             <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -68,7 +64,7 @@
           </svg>
         </button>
 
-        <button id="fullscreenToggle" class="icon-btn" title="全屏" aria-label="全屏展示">
+        <button id="fullscreenToggle" class="icon-btn" title="Toggle Fullscreen" aria-label="Toggle fullscreen mode">
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
           </svg>
@@ -88,7 +84,7 @@
         <p class="tagline">静待花开，奔赴下一场山海</p>
       </section>
 
-      <!-- High-Performance Apple Countdown Stage -->
+      <!-- Apple-Style Countdown Stage -->
       <section class="countdown-stage" aria-label="毕业倒计时">
         <div class="clock-grid">
           <!-- Days -->

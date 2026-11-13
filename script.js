@@ -1,8 +1,8 @@
 /**
- * Countdown 毕业 · Optimized Fast Runtime with Looping Background Music
+ * Countdown 毕业 · Runtime Engine
  * Target: January 9, 2027 00:00:00 Local Time
  * Format: dd日,hh小时,mm分,ss秒
- * BGM: https://youtu.be/aivb0mwmA7o (Infinite Loop)
+ * Background Music: Exact song from https://youtu.be/aivb0mwmA7o (Looped)
  */
 
 (function () {
@@ -12,11 +12,11 @@
   const TARGET_DATE = new Date(2027, 0, 9, 0, 0, 0);
   const TARGET_TIME = TARGET_DATE.getTime();
 
-  // Academic semester reference for graduation progress (Sep 1, 2026)
+  // Academic start date reference (Sep 1, 2026) for progress bar
   const SEMESTER_START = new Date(2026, 8, 1, 0, 0, 0).getTime();
   const TOTAL_DURATION = TARGET_TIME - SEMESTER_START;
 
-  // Cache Countdown Elements
+  // DOM Elements
   const elDays = document.getElementById('val-days');
   const elHours = document.getElementById('val-hours');
   const elMinutes = document.getElementById('val-minutes');
@@ -37,105 +37,81 @@
   const mouseGlow = document.getElementById('mouseGlow');
 
   // Music Elements
+  const bgmAudio = document.getElementById('bgmAudio');
   const elMusicToggle = document.getElementById('musicToggle');
   const elMusicText = document.getElementById('musicText');
 
   /* ==========================================================================
-     1. YouTube Background Music Player (Infinite Loop: aivb0mwmA7o)
+     1. Background Music Controller (Native HTML5 Loop: song.mp3)
      ========================================================================== */
-  const YOUTUBE_VIDEO_ID = 'aivb0mwmA7o';
-  let ytPlayer = null;
   let isMusicPlaying = false;
   let hasUserInteracted = false;
 
-  function updateMusicUI(playing) {
+  function updateMusicState(playing) {
     isMusicPlaying = playing;
     if (elMusicToggle) {
       elMusicToggle.classList.toggle('playing', playing);
       if (elMusicText) {
-        elMusicText.textContent = playing ? '播放中 · 毕业歌' : '播放音乐';
+        elMusicText.textContent = playing ? '🎵 Playing' : '🎵 Play Music';
       }
     }
   }
 
-  // Initialize YouTube IFrame API
-  window.onYouTubeIframeAPIReady = function () {
-    try {
-      ytPlayer = new YT.Player('ytPlayer', {
-        videoId: YOUTUBE_VIDEO_ID,
-        playerVars: {
-          autoplay: 1,
-          loop: 1,
-          playlist: YOUTUBE_VIDEO_ID, // Required by YouTube to loop single video
-          playsinline: 1,
-          controls: 0,
-          disablekb: 1,
-          fs: 0,
-          modestbranding: 1,
-          rel: 0
-        },
-        events: {
-          onReady: function (event) {
-            try {
-              event.target.setVolume(100);
-              // Attempt unmuted or muted autoplay based on browser policy
-              const playPromise = event.target.playVideo();
-              if (playPromise && playPromise.catch) {
-                playPromise.catch(() => {});
-              }
-            } catch (_) {}
-          },
-          onStateChange: function (event) {
-            // YT.PlayerState: -1 (UNSTARTED), 0 (ENDED), 1 (PLAYING), 2 (PAUSED), 3 (BUFFERING)
-            if (event.data === 0) {
-              // Video ended -> Loop again seamlessly
-              try {
-                event.target.seekTo(0);
-                event.target.playVideo();
-              } catch (_) {}
-            } else if (event.data === 1) {
-              updateMusicUI(true);
-            } else if (event.data === 2) {
-              updateMusicUI(false);
-            }
-          }
-        }
-      });
-    } catch (e) {
-      console.warn('YouTube Player initialization:', e);
-    }
-  };
+  function startMusic() {
+    if (!bgmAudio) return;
+    bgmAudio.play().then(() => {
+      updateMusicState(true);
+    }).catch(() => {
+      // Autoplay blocked by browser policy until interaction
+      updateMusicState(false);
+    });
+  }
 
-  // Browser Autoplay Policy: If browser blocked initial autoplay, start on first user interaction
-  function unlockAudioOnInteraction() {
+  function pauseMusic() {
+    if (!bgmAudio) return;
+    bgmAudio.pause();
+    updateMusicState(false);
+  }
+
+  // Audio Event Listeners for State & Infinite Loop Guarantee
+  if (bgmAudio) {
+    bgmAudio.loop = true;
+    bgmAudio.addEventListener('play', () => updateMusicState(true));
+    bgmAudio.addEventListener('pause', () => updateMusicState(false));
+    bgmAudio.addEventListener('ended', () => {
+      bgmAudio.currentTime = 0;
+      bgmAudio.play().catch(() => {});
+    });
+
+    // Attempt instant autoplay on page load
+    startMusic();
+  }
+
+  // Unlock audio on first user interaction anywhere on the screen
+  function handleFirstInteraction() {
     if (hasUserInteracted) return;
     hasUserInteracted = true;
-    if (ytPlayer && typeof ytPlayer.playVideo === 'function' && !isMusicPlaying) {
-      try {
-        ytPlayer.playVideo();
-      } catch (_) {}
+    if (bgmAudio && bgmAudio.paused) {
+      startMusic();
     }
   }
 
-  window.addEventListener('pointerdown', unlockAudioOnInteraction, { once: true });
-  window.addEventListener('keydown', unlockAudioOnInteraction, { once: true });
+  window.addEventListener('pointerdown', handleFirstInteraction, { once: true });
+  window.addEventListener('keydown', handleFirstInteraction, { once: true });
+  window.addEventListener('touchstart', handleFirstInteraction, { once: true });
 
-  // Music Button Click Toggle
+  // Music Pill Button Click Toggle
   if (elMusicToggle) {
-    elMusicToggle.addEventListener('click', () => {
+    elMusicToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
       hasUserInteracted = true;
-      if (!ytPlayer || typeof ytPlayer.getPlayerState !== 'function') return;
+      if (!bgmAudio) return;
 
-      try {
-        const state = ytPlayer.getPlayerState();
-        if (state === 1) { // Currently Playing
-          ytPlayer.pauseVideo();
-          updateMusicUI(false);
-        } else {
-          ytPlayer.playVideo();
-          updateMusicUI(true);
-        }
-      } catch (_) {}
+      if (bgmAudio.paused) {
+        startMusic();
+      } else {
+        pauseMusic();
+      }
     });
   }
 
@@ -174,7 +150,6 @@
 
   /* ==========================================================================
      3. High-Reliability Live Countdown Engine
-     (Driven strictly by wall-clock time; immune to tab background throttling)
      ========================================================================== */
   let prevD = '', prevH = '', prevM = '', prevS = '';
 
@@ -209,7 +184,6 @@
         return;
       }
 
-      // Exact wall clock division
       const totalSeconds = (diff / 1000) | 0;
       const totalMinutes = (totalSeconds / 60) | 0;
       const totalHours = (totalMinutes / 60) | 0;
@@ -251,21 +225,21 @@
     }
   }
 
-  // High-frequency 250ms check: catches second transitions immediately with 0 drift
+  // 250ms interval for precision
   setInterval(updateCountdown, 250);
 
-  // Re-sync immediately on visibility/tab change, window focus, or device wake
+  // Auto-resync when returning to tab or waking screen
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) updateCountdown();
   });
   window.addEventListener('focus', updateCountdown);
   window.addEventListener('pageshow', updateCountdown);
 
-  // Render initial tick immediately
+  // Initial calculation
   updateCountdown();
 
   /* ==========================================================================
-     4. Interactive Utilities (Copy, Theme, Fullscreen, Mouse Glow)
+     4. Interactive Utilities (Copy, Theme, Fullscreen, Pointer Glow)
      ========================================================================== */
   // Copy format string
   let copyTimer = null;
@@ -295,7 +269,7 @@
     });
   }
 
-  // Theme Toggle (Dark / Light)
+  // Theme Toggle
   const sunIcon = elThemeToggle ? elThemeToggle.querySelector('.sun-icon') : null;
   const moonIcon = elThemeToggle ? elThemeToggle.querySelector('.moon-icon') : null;
 
@@ -347,7 +321,7 @@
     });
   }
 
-  // Passive Pointer Glow (0 idle CPU overhead)
+  // Passive Pointer Glow
   let glowTicking = false;
   window.addEventListener('pointermove', (e) => {
     if (!glowTicking && mouseGlow) {
